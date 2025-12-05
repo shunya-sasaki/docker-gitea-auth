@@ -1,5 +1,5 @@
-**/node_modules
-**/__pycache__
+**/node_modules/
+**/__pycache__/
 **/_version.py
 **/.ipynb_checkpoints
 **/*.egg-info
@@ -8,7 +8,11 @@
 /.vscode
 /.venv
 /.env
-/build
-/dist
-/sandbox
-/gitea
+/build/
+/dist/
+/sandbox/
+/nginx/ssl/
+/gitea/git
+/gitea/ssh
+/gitea/gitea/*
+!/gitea/gitea/conf/

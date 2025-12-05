@@ -10,7 +10,10 @@ from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 
+from giteaoauth.app.config import config
+from giteaoauth.app.routers import routers
 from giteaoauth.utils import CustomLogger
 from giteaoauth.utils import GitVersion
 
@@ -23,7 +26,9 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan, version=GitVersion)
+app = FastAPI(
+    lifespan=lifespan, version=GitVersion.version(), root_path=config.root_path
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -31,7 +36,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-routers: list[APIRouter] = []
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=config.client_secret,
+    same_site="lax",
+    https_only=False,
+)
 for router in routers:
     app.include_router(router)
 
@@ -64,7 +74,7 @@ def start() -> None:
     else:
         workers = config.workers
     uvicorn.run(
-        f"src.{GitVersion.package_name()}.app.main:app",
+        f"{GitVersion.package_name()}.app.main:app",
         host=config.host,
         port=config.port,
         workers=workers,
@@ -77,12 +87,12 @@ def start() -> None:
 def dev() -> None:
     """Run the FastAPI application in development mode."""
     src_dirpath = Path("../src")
-    if not src_dirpath.exists():
+    if src_dirpath.exists():
         includes = [src_dirpath.as_posix()]
     else:
         includes = []
     uvicorn.run(
-        f"src.{GitVersion.package_name()}.app.main:app",
+        f"{GitVersion.package_name()}.app.main:app",
         host=config.host,
         port=config.port,
         reload=True,

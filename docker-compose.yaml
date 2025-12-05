@@ -1,11 +1,9 @@
-version: "3"
-
 networks:
   gitea:
     external: false
 
 services:
-  server:
+  gitea:
     image: docker.gitea.com/gitea:1.24.5
     container_name: gitea
     environment:
@@ -19,3 +17,17 @@ services:
     ports:
       - "13000:3000"
       - "10022:22"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    depends_on:
+      - gitea
+    networks:
+      - gitea
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./nginx/ssl/server.key:/etc/nginx/ssl/server.key:ro
+    ports:
+      - "443:443"
