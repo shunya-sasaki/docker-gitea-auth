@@ -28,10 +28,13 @@ class AppConfig(BaseModel):
 
     host: str = "localhost"
     port: int = 8000
+    workers: int = 1
     client_id: str = "84cd5c87-8426-4810-9c5e-9af3b9d5fa43"
     client_secret: str = (
         "gto_qmewvezwxyjqk7dfw7yryse5vnhv3qerz3yjdzsn45eeqtswrcja"
     )
+    gitea_public_url: str = "http://localhost/gitea"
+    gitea_internal_url: str = "http://localhost/gitea"
     root_path: str = "/fastapi"
     log_level: Literal["debug", "info", "warning", "error"] = "info"
 
